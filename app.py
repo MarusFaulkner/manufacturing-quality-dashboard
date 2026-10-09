@@ -136,3 +136,28 @@ st.dataframe(
     hide_index=True,
     use_container_width=True
 )
+# Statistical Process Control
+st.subheader("Statistical Process Control")
+
+st.write(
+    "Synthetic bore diameter measurements used to demonstrate process variation and control limits."
+)
+
+# Synthetic dimensional measurements in millimeters
+measurements = [
+    25.01, 24.98, 25.03, 25.00, 24.97,
+    25.02, 25.04, 24.99, 25.01, 24.96,
+    25.00, 25.03, 24.98, 25.02, 25.01,
+    24.99, 25.04, 25.00, 24.97, 25.02
+]
+
+spc_df = pd.DataFrame({
+    "Sample": range(1, len(measurements) + 1),
+    "Measurement": measurements
+})
+
+st.dataframe(
+    spc_df,
+    hide_index=True,
+    use_container_width=True
+)
