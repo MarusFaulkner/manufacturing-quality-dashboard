@@ -91,12 +91,17 @@ fig.add_trace(
     secondary_y=True
 )
 
-# 80% reference line
-fig.add_hline(
-    y=80,
-    line_dash="dash",
-    annotation_text="80% Threshold",
+# 80% Pareto threshold on the percentage axis
+fig.add_trace(
+    go.Scatter(
+        x=pareto_df["Defect Type"],
+        y=[80] * len(pareto_df),
+        name="80% Threshold",
+        mode="lines",
+        line=dict(dash="dash")
+    ),
     secondary_y=True
+)
 )
 
 fig.update_layout(
