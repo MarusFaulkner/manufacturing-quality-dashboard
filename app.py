@@ -497,3 +497,81 @@ if lower_spec <= predicted_bore <= upper_spec:
     st.success("Dimensional Status: Within Specification")
 else:
     st.error("Dimensional Status: Out of Specification")
+# Tool Wear vs. Bore Diameter Visualization
+st.subheader("Tool Wear vs. Bore Diameter")
+
+st.write(
+    "Visualize how predicted bore diameter changes as the cutting tool "
+    "progresses through its operating life."
+)
+
+# Generate synthetic tool-life curve
+cycle_range = list(range(0, 1001, 25))
+predicted_bores = []
+
+for cycle in cycle_range:
+    if cycle < 600:
+        bore = nominal_bore
+    elif cycle < 800:
+        bore = nominal_bore + ((cycle - 600) / 200) * 0.08
+    else:
+        bore = 25.08 + ((cycle - 800) / 200) * 0.07
+
+    predicted_bores.append(bore)
+
+tool_wear_df = pd.DataFrame({
+    "Tool Cycles": cycle_range,
+    "Predicted Bore Diameter": predicted_bores
+})
+
+fig_tool_wear = px.line(
+    tool_wear_df,
+    x="Tool Cycles",
+    y="Predicted Bore Diameter",
+    markers=True,
+    title="Predicted Bore Diameter vs. Tool Usage"
+)
+
+# Upper specification limit
+fig_tool_wear.add_hline(
+    y=upper_spec,
+    line_dash="dash",
+    annotation_text="USL 25.100 mm",
+    annotation_position="top left"
+)
+
+# Lower specification limit
+fig_tool_wear.add_hline(
+    y=lower_spec,
+    line_dash="dash",
+    annotation_text="LSL 24.900 mm",
+    annotation_position="bottom left"
+)
+
+# Preventive tool replacement point
+fig_tool_wear.add_vline(
+    x=recommended_tool_life,
+    line_dash="dash",
+    annotation_text="Preventive Replacement — 800 Cycles",
+    annotation_position="top left"
+)
+
+# Current slider position
+fig_tool_wear.add_scatter(
+    x=[tool_cycles],
+    y=[predicted_bore],
+    mode="markers",
+    marker=dict(size=14),
+    name="Current Tool Position"
+)
+
+fig_tool_wear.update_layout(
+    xaxis_title="Cutting Tool Cycles",
+    yaxis_title="Bore Diameter (mm)",
+    hovermode="x unified"
+)
+
+st.plotly_chart(
+    fig_tool_wear,
+    use_container_width=True
+)
