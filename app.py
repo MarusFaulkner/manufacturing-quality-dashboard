@@ -45,3 +45,40 @@ col1.metric("Units Inspected", total_inspected)
 col2.metric("Nonconforming", total_defects)
 col3.metric("Defect Rate", f"{defect_rate:.1f}%")
 col4.metric("First Pass Yield", f"{first_pass_yield:.1f}%")
+# Pareto Analysis
+import plotly.express as px
+
+st.subheader("Defect Pareto Analysis")
+
+# Sort defects from highest to lowest
+pareto_df = df.sort_values(
+    by="Defect Count",
+    ascending=False
+).copy()
+
+# Calculate cumulative percentage
+pareto_df["Cumulative %"] = (
+    pareto_df["Defect Count"].cumsum()
+    / pareto_df["Defect Count"].sum()
+    * 100
+)
+
+# Create interactive bar chart
+fig = px.bar(
+    pareto_df,
+    x="Defect Type",
+    y="Defect Count",
+    text="Defect Count",
+    title="Defects by Category"
+)
+
+fig.update_traces(textposition="outside")
+
+st.plotly_chart(fig, use_container_width=True)
+
+# Show the Pareto data
+st.dataframe(
+    pareto_df,
+    hide_index=True,
+    use_container_width=True
+)
