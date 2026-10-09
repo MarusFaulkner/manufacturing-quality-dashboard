@@ -320,3 +320,41 @@ trend_fig.update_layout(
 )
 
 st.plotly_chart(trend_fig, use_container_width=True)
+# CAPA Tracking
+st.subheader("Corrective and Preventive Action (CAPA)")
+
+st.write(
+    "Synthetic CAPA records used to demonstrate corrective action tracking and effectiveness verification."
+)
+
+capa_data = {
+    "CAPA ID": ["CAPA-001", "CAPA-002", "CAPA-003"],
+    "Issue": [
+        "Bore Diameter Variation",
+        "Surface Finish Defect",
+        "Excessive Runout"
+    ],
+    "Root Cause": [
+        "Tool wear exceeded replacement interval",
+        "Coolant concentration variation",
+        "Fixture alignment variation"
+    ],
+    "Corrective Action": [
+        "Reduce tool replacement interval",
+        "Standardize coolant concentration checks",
+        "Add fixture alignment verification"
+    ],
+    "Status": [
+        "Verified",
+        "In Progress",
+        "Open"
+    ]
+}
+
+capa_df = pd.DataFrame(capa_data)
+# Display CAPA tracking table
+st.dataframe(
+    capa_df,
+    hide_index=True,
+    use_container_width=True
+)
