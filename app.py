@@ -102,7 +102,7 @@ fig.add_trace(
     ),
     secondary_y=True
 )
-)
+
 
 fig.update_layout(
     title="Pareto Analysis — Defects by Category",
