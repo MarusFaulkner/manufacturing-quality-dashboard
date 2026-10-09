@@ -270,3 +270,12 @@ cap_col1.metric("LSL", f"{lsl:.2f} mm")
 cap_col2.metric("USL", f"{usl:.2f} mm")
 cap_col3.metric("Cp", f"{cp:.2f}")
 cap_col4.metric("Cpk", f"{cpk:.2f}")
+# Capability status
+st.subheader("Capability Assessment")
+
+if cpk >= 1.33:
+    st.success("Demonstration Status: Capable")
+elif cpk >= 1.00:
+    st.warning("Demonstration Status: Marginal")
+else:
+    st.error("Demonstration Status: Not Capable")
