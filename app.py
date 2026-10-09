@@ -156,6 +156,24 @@ spc_df = pd.DataFrame({
     "Measurement": measurements
 })
 
+# Calculate SPC statistics
+process_mean = spc_df["Measurement"].mean()
+process_std = spc_df["Measurement"].std()
+
+ucl = process_mean + (3 * process_std)
+lcl = process_mean - (3 * process_std)
+
+# Engineering specification limits
+target = 25.00
+usl = 25.10
+lsl = 24.90
+# Display SPC metrics
+spc_col1, spc_col2, spc_col3, spc_col4 = st.columns(4)
+
+spc_col1.metric("Process Mean", f"{process_mean:.3f} mm")
+spc_col2.metric("Std. Deviation", f"{process_std:.3f} mm")
+spc_col3.metric("UCL", f"{ucl:.3f} mm")
+spc_col4.metric("LCL", f"{lcl:.3f} mm")
 st.dataframe(
     spc_df,
     hide_index=True,
