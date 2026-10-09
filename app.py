@@ -467,3 +467,33 @@ elif tool_life_used < 100:
     st.warning("Tool Status: Monitor — Approaching Preventive Replacement")
 else:
     st.error("Tool Status: Replacement Recommended — Tool-Life Limit Reached")
+# Predictive Quality Impact Model
+st.subheader("Predictive Quality Impact")
+
+st.write(
+    "Simulate how increasing cutting-tool usage may influence "
+    "bore diameter stability and dimensional defect risk."
+)
+
+# Synthetic bore-diameter model
+nominal_bore = 25.00
+upper_spec = 25.10
+lower_spec = 24.90
+
+# Tool wear begins influencing dimensional stability
+if tool_cycles < 600:
+    predicted_bore = nominal_bore
+elif tool_cycles < 800:
+    predicted_bore = nominal_bore + ((tool_cycles - 600) / 200) * 0.08
+else:
+    predicted_bore = 25.08 + ((tool_cycles - 800) / 200) * 0.07
+
+st.metric(
+    "Predicted Bore Diameter",
+    f"{predicted_bore:.3f} mm"
+)
+
+if lower_spec <= predicted_bore <= upper_spec:
+    st.success("Dimensional Status: Within Specification")
+else:
+    st.error("Dimensional Status: Out of Specification")
