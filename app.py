@@ -377,3 +377,60 @@ if defect_reduction >= 50:
     st.success("CAPA Effectiveness: Effective")
 else:
     st.warning("CAPA Effectiveness: Further Action Required")
+# Root Cause Analysis
+st.subheader("5 Whys Root Cause Analysis")
+
+st.write(
+    "Structured root cause investigation of the synthetic bore diameter variation."
+)
+
+why_data = {
+    "Step": ["Why 1", "Why 2", "Why 3", "Why 4", "Why 5"],
+    "Finding": [
+        "Why did the bore diameter vary? Cutting dimensions drifted during production.",
+        "Why did dimensions drift? Tool wear increased during the production run.",
+        "Why did tool wear increase? The cutting tool remained in service too long.",
+        "Why did the tool remain in service too long? The replacement interval was inadequate.",
+        "Why was the interval inadequate? Tool-life data was not being used to optimize the replacement schedule."
+    ]
+}
+
+why_df = pd.DataFrame(why_data)
+
+st.dataframe(
+    why_df,
+    hide_index=True,
+    use_container_width=True
+)
+
+st.subheader("Root Cause Conclusion")
+
+st.error(
+    "Root Cause Identified: Tool replacement intervals were not optimized using tool-life data."
+)
+
+st.subheader("Root Cause to CAPA Link")
+
+st.info(
+    "CAPA-001: Reduce the cutting-tool replacement interval and use tool-life data "
+    "to establish a preventive replacement schedule."
+)
+
+# Root Cause Classification
+st.subheader("Root Cause Classification")
+
+rca_col1, rca_col2, rca_col3 = st.columns(3)
+
+rca_col1.metric("6M Category", "Machine / Method")
+rca_col2.metric("Failure Mode", "Cutting Tool Wear")
+rca_col3.metric("System Cause", "Tool-Life Management")
+
+st.write(
+    "**Preventive Control:** Establish a data-driven tool replacement interval "
+    "before dimensional drift produces nonconforming material."
+)
+
+st.write(
+    "**Verification Method:** Monitor bore diameter measurements, defect rate, "
+    "process capability, and recurrence after corrective action."
+)
