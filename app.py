@@ -233,3 +233,21 @@ spc_fig.update_layout(
 )
 
 st.plotly_chart(spc_fig, use_container_width=True)
+# Process Capability Analysis
+st.subheader("Process Capability")
+
+# Calculate Cp and Cpk
+cp = (usl - lsl) / (6 * process_std)
+
+cpu = (usl - process_mean) / (3 * process_std)
+cpl = (process_mean - lsl) / (3 * process_std)
+
+cpk = min(cpu, cpl)
+
+# Display capability metrics
+cap_col1, cap_col2, cap_col3, cap_col4 = st.columns(4)
+
+cap_col1.metric("LSL", f"{lsl:.2f} mm")
+cap_col2.metric("USL", f"{usl:.2f} mm")
+cap_col3.metric("Cp", f"{cp:.2f}")
+cap_col4.metric("Cpk", f"{cpk:.2f}")
