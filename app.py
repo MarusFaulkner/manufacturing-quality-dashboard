@@ -358,3 +358,22 @@ st.dataframe(
     hide_index=True,
     use_container_width=True
 )
+# CAPA Effectiveness Verification
+st.subheader("CAPA Effectiveness Verification")
+
+before_defects = 16
+after_defects = 4
+
+defect_reduction = (
+    (before_defects - after_defects) / before_defects
+) * 100
+verify_col1, verify_col2, verify_col3 = st.columns(3)
+
+verify_col1.metric("Defects Before CAPA", before_defects)
+verify_col2.metric("Defects After CAPA", after_defects)
+verify_col3.metric("Defect Reduction", f"{defect_reduction:.1f}%")
+# Effectiveness decision
+if defect_reduction >= 50:
+    st.success("CAPA Effectiveness: Effective")
+else:
+    st.warning("CAPA Effectiveness: Further Action Required")
