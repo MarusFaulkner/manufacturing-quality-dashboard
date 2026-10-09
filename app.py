@@ -163,10 +163,29 @@ process_std = spc_df["Measurement"].std()
 ucl = process_mean + (3 * process_std)
 lcl = process_mean - (3 * process_std)
 
-# Engineering specification limits
-target = 25.00
-usl = 25.10
-lsl = 24.90
+# Interactive engineering specification limits
+st.sidebar.header("Process Settings")
+
+lsl = st.sidebar.number_input(
+    "Lower Specification Limit (mm)",
+    value=24.90,
+    step=0.01,
+    format="%.2f"
+)
+
+target = st.sidebar.number_input(
+    "Target Diameter (mm)",
+    value=25.00,
+    step=0.01,
+    format="%.2f"
+)
+
+usl = st.sidebar.number_input(
+    "Upper Specification Limit (mm)",
+    value=25.10,
+    step=0.01,
+    format="%.2f"
+)
 # Display SPC metrics
 spc_col1, spc_col2, spc_col3, spc_col4 = st.columns(4)
 
