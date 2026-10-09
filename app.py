@@ -434,3 +434,36 @@ st.write(
     "**Verification Method:** Monitor bore diameter measurements, defect rate, "
     "process capability, and recurrence after corrective action."
 )
+# Interactive Tool-Life Risk Model
+st.subheader("Interactive Tool-Life Risk Model")
+
+st.write(
+    "Explore how increasing cutting-tool usage can influence synthetic "
+    "tool-wear risk and dimensional stability."
+)
+
+tool_cycles = st.slider(
+    "Cutting Tool Cycles",
+    min_value=0,
+    max_value=1000,
+    value=400,
+    step=25
+)
+
+# Synthetic recommended tool-life limit
+recommended_tool_life = 800
+
+tool_life_used = (tool_cycles / recommended_tool_life) * 100
+
+st.metric(
+    "Tool Life Used",
+    f"{tool_life_used:.1f}%"
+)
+
+# Tool-life risk classification
+if tool_life_used < 75:
+    st.success("Tool Status: Normal — Continue Monitoring")
+elif tool_life_used < 100:
+    st.warning("Tool Status: Monitor — Approaching Preventive Replacement")
+else:
+    st.error("Tool Status: Replacement Recommended — Tool-Life Limit Reached")
