@@ -281,3 +281,42 @@ elif cpk >= 1.00:
     st.warning("Demonstration Status: Marginal")
 else:
     st.error("Demonstration Status: Not Capable")
+# Defect Trend Analysis
+st.subheader("Defect Trend Analysis")
+
+st.write(
+    "Synthetic weekly defect data used to demonstrate quality performance over time."
+)
+
+# Synthetic weekly production data
+trend_data = {
+    "Week": ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6"],
+    "Units Inspected": [210, 225, 230, 240, 250, 260],
+    "Defects": [31, 29, 27, 28, 23, 20]
+}
+
+trend_df = pd.DataFrame(trend_data)
+
+# Calculate weekly defect rate
+trend_df["Defect Rate %"] = (
+    trend_df["Defects"] / trend_df["Units Inspected"]
+) * 100
+# Create defect rate trend chart
+trend_fig = go.Figure()
+
+trend_fig.add_trace(
+    go.Scatter(
+        x=trend_df["Week"],
+        y=trend_df["Defect Rate %"],
+        mode="lines+markers",
+        name="Defect Rate"
+    )
+)
+
+trend_fig.update_layout(
+    title="Weekly Defect Rate Trend",
+    xaxis_title="Production Week",
+    yaxis_title="Defect Rate (%)"
+)
+
+st.plotly_chart(trend_fig, use_container_width=True)
