@@ -164,8 +164,10 @@ ucl = process_mean + (3 * process_std)
 lcl = process_mean - (3 * process_std)
 
 # Interactive engineering specification limits
-st.sidebar.header("Process Settings")
-
+st.sidebar.header("What-If Specification Analysis")
+st.sidebar.caption(
+    "Adjust the synthetic specification limits to explore how tolerance changes affect process capability."
+)
 lsl = st.sidebar.number_input(
     "Lower Specification Limit (mm)",
     value=24.90,
