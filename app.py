@@ -179,3 +179,57 @@ st.dataframe(
     hide_index=True,
     use_container_width=True
 )
+# SPC visualization
+st.subheader("Bore Diameter Control Chart")
+
+spc_fig = go.Figure()
+
+# Measurement data
+spc_fig.add_trace(
+    go.Scatter(
+        x=spc_df["Sample"],
+        y=spc_df["Measurement"],
+        mode="lines+markers",
+        name="Measurement"
+    )
+)
+
+# Process mean
+spc_fig.add_trace(
+    go.Scatter(
+        x=spc_df["Sample"],
+        y=[process_mean] * len(spc_df),
+        mode="lines",
+        name="Process Mean"
+    )
+)
+
+# Upper control limit
+spc_fig.add_trace(
+    go.Scatter(
+        x=spc_df["Sample"],
+        y=[ucl] * len(spc_df),
+        mode="lines",
+        name="UCL",
+        line=dict(dash="dash")
+    )
+)
+
+# Lower control limit
+spc_fig.add_trace(
+    go.Scatter(
+        x=spc_df["Sample"],
+        y=[lcl] * len(spc_df),
+        mode="lines",
+        name="LCL",
+        line=dict(dash="dash")
+    )
+)
+
+spc_fig.update_layout(
+    title="Synthetic Bore Diameter — 3-Sigma Demonstration",
+    xaxis_title="Sample",
+    yaxis_title="Diameter (mm)"
+)
+
+st.plotly_chart(spc_fig, use_container_width=True)
