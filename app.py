@@ -116,10 +116,6 @@ st.markdown(
 
 st.subheader("Defect Pareto Analysis")
 
-# Sort defects from highest to lowest
-pareto_df = df.sort_values(
-
-st.subheader("Defect Pareto Analysis")
 
 # Sort defects from highest to lowest
 pareto_df = df.sort_values(
