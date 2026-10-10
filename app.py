@@ -40,7 +40,7 @@ with st.sidebar:
     with st.expander("Predictive Quality"):
         st.markdown(
             """
-            - Predictive Quality Impact
+            - [Predictive Quality Impact](#predictive-quality-impact)
             - Tool Wear vs. Bore Diameter
             """
         )
@@ -554,6 +554,10 @@ elif tool_life_used < 100:
 else:
     st.error("Tool Status: Replacement Recommended — Tool-Life Limit Reached")
 # Predictive Quality Impact Model
+st.markdown(
+    '<div id="predictive-quality-impact"></div>',
+    unsafe_allow_html=True
+)
 st.subheader("Predictive Quality Impact")
 
 st.write(
