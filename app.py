@@ -677,3 +677,41 @@ col3.metric(
     "R² Score",
     f"{r2:.3f}"
 )
+# Machine Learning Feature Importance
+st.subheader("ML Feature Importance")
+
+st.write(
+    "See which manufacturing process variables have the greatest influence "
+    "on the machine-learning model's bore-diameter predictions."
+)
+
+feature_importance = pd.DataFrame({
+    "Process Variable": X.columns,
+    "Importance": ml_model.feature_importances_
+}).sort_values(
+    by="Importance",
+    ascending=True
+)
+
+fig_importance = px.bar(
+    feature_importance,
+    x="Importance",
+    y="Process Variable",
+    orientation="h",
+    title="Random Forest Feature Importance"
+)
+
+fig_importance.update_layout(
+    xaxis_title="Relative Importance",
+    yaxis_title="Process Variable"
+)
+
+st.plotly_chart(
+    fig_importance,
+    use_container_width=True
+)
+
+st.caption(
+    "Feature importance reflects this synthetic training dataset and "
+    "should not be interpreted as validated real-world causal relationships."
+)
