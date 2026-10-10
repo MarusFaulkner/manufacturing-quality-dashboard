@@ -51,7 +51,7 @@ with st.sidebar:
             - [Predictive Quality Model](#predictive-quality-model)
             - [Feature Importance](#feature-importance)
             - [Live ML Process Simulator](#live-ml-process-simulator)
-            - ML Decision Support
+            - [ML Decision Support](#ml-decision-support)
             - ML Model Validation
             """
         )
@@ -913,6 +913,10 @@ st.caption(
     "Random Forest trained on synthetic manufacturing data."
 )
 # ML Decision Support
+st.markdown(
+    '<div id="ml-decision-support"></div>',
+    unsafe_allow_html=True
+)
 st.subheader("ML Decision Support")
 
 st.write(
