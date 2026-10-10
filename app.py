@@ -16,13 +16,23 @@ st.set_page_config(
 
 st.title("Manufacturing Quality Analytics Dashboard")
 
-st.write(
-    "Interactive quality dashboard using synthetic manufacturing inspection data."
+st.markdown(
+    """
+    **Interactive Quality Engineering • Root Cause Analysis • Predictive Maintenance • Machine Learning**
+
+    A portfolio demonstration of how manufacturing quality data can be transformed
+    into actionable decisions using statistical analysis, root cause investigation,
+    process monitoring, and machine-learning-based predictive quality.
+    """
 )
 
 st.info(
-    "Educational portfolio project — all manufacturing data is synthetic."
+    "Portfolio Project: All manufacturing and machine-learning data used in this "
+    "dashboard are synthetic and intended for educational demonstration."
 )
+
+
+
 import pandas as pd
 
 # Synthetic manufacturing inspection data
