@@ -582,3 +582,98 @@ st.plotly_chart(
     fig_tool_wear,
     use_container_width=True
 )
+# Machine Learning Predictive Quality Model
+st.subheader("Machine Learning — Predictive Quality Model")
+
+st.write(
+    "Train a machine-learning model on synthetic CNC process data to predict "
+    "bore diameter from operating conditions."
+)
+
+# Reproducible synthetic manufacturing dataset
+np.random.seed(42)
+
+sample_size = 500
+
+ml_tool_cycles = np.random.randint(0, 1001, sample_size)
+ml_spindle_speed = np.random.randint(1800, 3201, sample_size)
+ml_feed_rate = np.random.uniform(80, 180, sample_size)
+ml_vibration = np.random.uniform(0.5, 4.0, sample_size)
+ml_temperature = np.random.uniform(20, 45, sample_size)
+
+# Synthetic dimensional behavior
+tool_wear_effect = np.where(
+    ml_tool_cycles < 600,
+    0,
+    (ml_tool_cycles - 600) * 0.00035
+)
+
+bore_diameter = (
+    25.000
+    + tool_wear_effect
+    + (ml_vibration - 2.0) * 0.008
+    + (ml_temperature - 30.0) * 0.001
+    + (ml_feed_rate - 130.0) * 0.00015
+    + np.random.normal(0, 0.008, sample_size)
+)
+
+ml_data = pd.DataFrame({
+    "Tool Cycles": ml_tool_cycles,
+    "Spindle Speed": ml_spindle_speed,
+    "Feed Rate": ml_feed_rate,
+    "Vibration": ml_vibration,
+    "Temperature": ml_temperature,
+    "Bore Diameter": bore_diameter
+})
+
+# ML features and prediction target
+X = ml_data[
+    [
+        "Tool Cycles",
+        "Spindle Speed",
+        "Feed Rate",
+        "Vibration",
+        "Temperature"
+    ]
+]
+
+y = ml_data["Bore Diameter"]
+
+# Split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.20,
+    random_state=42
+)
+
+# Train Random Forest regression model
+ml_model = RandomForestRegressor(
+    n_estimators=100,
+    random_state=42
+)
+
+ml_model.fit(X_train, y_train)
+
+# Evaluate model
+y_pred = ml_model.predict(X_test)
+
+mae = mean_absolute_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+col1, col2, col3 = st.columns(3)
+
+col1.metric(
+    "Training Samples",
+    len(X_train)
+)
+
+col2.metric(
+    "Mean Absolute Error",
+    f"{mae:.4f} mm"
+)
+
+col3.metric(
+    "R² Score",
+    f"{r2:.3f}"
+)
