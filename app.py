@@ -31,7 +31,7 @@ with st.sidebar:
     with st.expander("Root Cause & Improvement"):
         st.markdown(
             """
-            - Root Cause Analysis
+           - [Root Cause Analysis](#root-cause-analysis)
             - Corrective / Preventive Action
             - Tool-Life Risk Model
             """
@@ -452,6 +452,10 @@ if defect_reduction >= 50:
 else:
     st.warning("CAPA Effectiveness: Further Action Required")
 # Root Cause Analysis
+st.markdown(
+    '<div id="root-cause-analysis"></div>',
+    unsafe_allow_html=True
+)
 st.subheader("5 Whys Root Cause Analysis")
 
 st.write(
