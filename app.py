@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import plotly.express as px
@@ -71,7 +72,7 @@ st.info(
         
     
 
-import pandas as pd
+
 
 # Synthetic manufacturing inspection data
 data = {
