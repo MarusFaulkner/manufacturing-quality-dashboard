@@ -19,14 +19,14 @@ st.title("Manufacturing Quality Analytics Dashboard")
 with st.sidebar:
     st.header("Dashboard Navigation")
 
-    with st.expander("Quality Analytics", expanded=True):
-        st.markdown(
-            """
-            - Quality Performance
-            - Defect Pareto Analysis
-            - Process Capability
-            """
-        )
+   with st.expander("Quality Analytics", expanded=True):
+    st.markdown(
+        """
+        - [Quality Performance](#quality-performance)
+        - [Defect Pareto Analysis](#defect-pareto-analysis)
+        - [Process Capability](#process-capability)
+        """
+    )
 
     with st.expander("Root Cause & Improvement"):
         st.markdown(
@@ -92,6 +92,11 @@ total_inspected = 240
 total_defects = df["Defect Count"].sum()
 defect_rate = (total_defects / total_inspected) * 100
 first_pass_yield = ((total_inspected - total_defects) / total_inspected) * 100
+st.markdown(
+    '<div id="quality-performance"></div>',
+    unsafe_allow_html=True
+)
+
 
 st.subheader("Quality Performance")
 
@@ -103,6 +108,16 @@ col3.metric("Defect Rate", f"{defect_rate:.1f}%")
 col4.metric("First Pass Yield", f"{first_pass_yield:.1f}%")
 # Pareto Analysis
 
+
+st.markdown(
+    '<div id="defect-pareto-analysis"></div>',
+    unsafe_allow_html=True
+)
+
+st.subheader("Defect Pareto Analysis")
+
+# Sort defects from highest to lowest
+pareto_df = df.sort_values(
 
 st.subheader("Defect Pareto Analysis")
 
@@ -310,7 +325,15 @@ spc_fig.update_layout(
 
 st.plotly_chart(spc_fig, use_container_width=True)
 # Process Capability Analysis
+
+
+st.markdown(
+    '<div id="process-capability"></div>',
+    unsafe_allow_html=True
+)
+
 st.subheader("Process Capability")
+
 
 # Calculate Cp and Cpk
 cp = (usl - lsl) / (6 * process_std)
