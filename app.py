@@ -19,14 +19,14 @@ st.title("Manufacturing Quality Analytics Dashboard")
 with st.sidebar:
     st.header("Dashboard Navigation")
 
-   with st.expander("Quality Analytics", expanded=True):
-    st.markdown(
-        """
-        - [Quality Performance](#quality-performance)
-        - [Defect Pareto Analysis](#defect-pareto-analysis)
-        - [Process Capability](#process-capability)
-        """
-    )
+    with st.expander("Quality Analytics", expanded=True):
+        st.markdown(
+            """
+            - [Quality Performance](#quality-performance)
+            - [Defect Pareto Analysis](#defect-pareto-analysis)
+            - [Process Capability](#process-capability)
+            """
+        )
 
     with st.expander("Root Cause & Improvement"):
         st.markdown(
