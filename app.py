@@ -813,3 +813,63 @@ st.caption(
     "Educational ML simulation only. Predictions are generated from a "
     "Random Forest trained on synthetic manufacturing data."
 )
+# ML Decision Support
+st.subheader("ML Decision Support")
+
+st.write(
+    "Combine preventive tool-life limits with the machine-learning prediction "
+    "to generate an actionable quality recommendation."
+)
+
+# Calculate preventive tool-life status
+sim_tool_life_percent = (
+    sim_tool_cycles / recommended_tool_life
+) * 100
+
+decision_col1, decision_col2 = st.columns(2)
+
+decision_col1.metric(
+    "Tool Life Used",
+    f"{sim_tool_life_percent:.1f}%"
+)
+
+decision_col2.metric(
+    "ML Predicted Bore",
+    f"{live_prediction:.3f} mm"
+)
+
+# Decision-support logic
+if live_prediction > upper_spec or live_prediction < lower_spec:
+    st.error(
+        "ACTION: Stop and Inspect — ML predicts a dimensional "
+        "condition outside the engineering specification limits."
+    )
+
+elif sim_tool_cycles >= recommended_tool_life:
+    st.error(
+        "ACTION: Replace Tool — Preventive tool-life limit has been reached "
+        "and continued production increases dimensional risk."
+    )
+
+elif live_prediction >= 25.080:
+    st.warning(
+        "ACTION: Prepare Tool Change — Product remains within specification, "
+        "but the ML model indicates increasing dimensional risk."
+    )
+
+elif sim_tool_life_percent >= 75:
+    st.warning(
+        "ACTION: Increase Monitoring — Tool is approaching its preventive "
+        "replacement interval."
+    )
+
+else:
+    st.success(
+        "ACTION: Continue Production — Tool life and ML-predicted dimensional "
+        "performance remain within the current operating criteria."
+    )
+
+st.caption(
+    "Decision support is an educational demonstration based on synthetic "
+    "manufacturing data and predefined engineering thresholds."
+)
