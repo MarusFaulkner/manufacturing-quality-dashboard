@@ -33,7 +33,7 @@ with st.sidebar:
             """
            - [Root Cause Analysis](#root-cause-analysis)
             - [Corrective / Preventive Action](#corrective-preventive-action)
-            - Tool-Life Risk Model
+           - [Tool-Life Risk Model](#tool-life-risk-model)
             """
         )
 
@@ -517,6 +517,10 @@ st.write(
     "process capability, and recurrence after corrective action."
 )
 # Interactive Tool-Life Risk Model
+st.markdown(
+    '<div id="tool-life-risk-model"></div>',
+    unsafe_allow_html=True
+)
 st.subheader("Interactive Tool-Life Risk Model")
 
 st.write(
