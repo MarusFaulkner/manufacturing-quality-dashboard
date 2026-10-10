@@ -52,7 +52,7 @@ with st.sidebar:
             - [Feature Importance](#feature-importance)
             - [Live ML Process Simulator](#live-ml-process-simulator)
             - [ML Decision Support](#ml-decision-support)
-            - ML Model Validation
+            - [ML Model Validation](#ml-model-validation)
             """
         )
 
@@ -977,6 +977,10 @@ st.caption(
     "manufacturing data and predefined engineering thresholds."
 )
 # Actual vs. Predicted Model Validation
+st.markdown(
+    '<div id="ml-model-validation"></div>',
+    unsafe_allow_html=True
+)
 st.subheader("ML Model Validation")
 
 st.write(
