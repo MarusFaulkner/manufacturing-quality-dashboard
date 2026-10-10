@@ -16,15 +16,51 @@ st.set_page_config(
 
 st.title("Manufacturing Quality Analytics Dashboard")
 
-st.markdown(
-    """
-    **Interactive Quality Engineering • Root Cause Analysis • Predictive Maintenance • Machine Learning**
+with st.sidebar:
+    st.header("Dashboard Navigation")
 
-    A portfolio demonstration of how manufacturing quality data can be transformed
-    into actionable decisions using statistical analysis, root cause investigation,
-    process monitoring, and machine-learning-based predictive quality.
-    """
-)
+    with st.expander("Quality Analytics", expanded=True):
+        st.markdown(
+            """
+            - Quality Performance
+            - Defect Pareto Analysis
+            - Process Capability
+            """
+        )
+
+    with st.expander("Root Cause & Improvement"):
+        st.markdown(
+            """
+            - Root Cause Analysis
+            - Corrective / Preventive Action
+            - Tool-Life Risk Model
+            """
+        )
+
+    with st.expander("Predictive Quality"):
+        st.markdown(
+            """
+            - Predictive Quality Impact
+            - Tool Wear vs. Bore Diameter
+            """
+        )
+
+    with st.expander("Machine Learning"):
+        st.markdown(
+            """
+            - Predictive Quality Model
+            - Feature Importance
+            - Live ML Process Simulator
+            - ML Decision Support
+            - ML Model Validation
+            """
+        )
+
+    st.divider()
+
+    st.caption(
+        "Portfolio demonstration using synthetic manufacturing data."
+    )
 
 st.info(
     "Portfolio Project: All manufacturing and machine-learning data used in this "
