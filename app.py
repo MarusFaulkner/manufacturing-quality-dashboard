@@ -49,7 +49,7 @@ with st.sidebar:
         st.markdown(
             """
             - [Predictive Quality Model](#predictive-quality-model)
-            - Feature Importance
+            - [Feature Importance](#feature-importance)
             - Live ML Process Simulator
             - ML Decision Support
             - ML Model Validation
@@ -769,6 +769,10 @@ col3.metric(
     f"{r2:.3f}"
 )
 # Machine Learning Feature Importance
+st.markdown(
+    '<div id="feature-importance"></div>',
+    unsafe_allow_html=True
+)
 st.subheader("ML Feature Importance")
 
 st.write(
