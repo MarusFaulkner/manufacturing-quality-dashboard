@@ -715,3 +715,101 @@ st.caption(
     "Feature importance reflects this synthetic training dataset and "
     "should not be interpreted as validated real-world causal relationships."
 )
+# Live ML Process Simulator
+st.subheader("Live ML Process Simulator")
+
+st.write(
+    "Adjust CNC operating conditions and let the trained Random Forest model "
+    "predict the resulting bore diameter in real time."
+)
+
+# Interactive process controls
+sim_col1, sim_col2 = st.columns(2)
+
+with sim_col1:
+    sim_tool_cycles = st.slider(
+        "ML Tool Cycles",
+        min_value=0,
+        max_value=1000,
+        value=400,
+        step=25
+    )
+
+    sim_spindle_speed = st.slider(
+        "Spindle Speed (RPM)",
+        min_value=1800,
+        max_value=3200,
+        value=2500,
+        step=50
+    )
+
+    sim_feed_rate = st.slider(
+        "Feed Rate",
+        min_value=80.0,
+        max_value=180.0,
+        value=130.0,
+        step=5.0
+    )
+
+with sim_col2:
+    sim_vibration = st.slider(
+        "Vibration",
+        min_value=0.5,
+        max_value=4.0,
+        value=2.0,
+        step=0.1
+    )
+
+    sim_temperature = st.slider(
+        "Process Temperature (°C)",
+        min_value=20.0,
+        max_value=45.0,
+        value=30.0,
+        step=1.0
+    )
+
+# Build input using the same feature names used during training
+live_input = pd.DataFrame({
+    "Tool Cycles": [sim_tool_cycles],
+    "Spindle Speed": [sim_spindle_speed],
+    "Feed Rate": [sim_feed_rate],
+    "Vibration": [sim_vibration],
+    "Temperature": [sim_temperature]
+})
+
+# Generate live ML prediction
+live_prediction = ml_model.predict(live_input)[0]
+
+st.metric(
+    "ML Predicted Bore Diameter",
+    f"{live_prediction:.3f} mm"
+)
+
+# Compare ML prediction with engineering specification limits
+if live_prediction > upper_spec:
+    st.error(
+        "ML Quality Risk: Predicted bore diameter exceeds the "
+        "25.100 mm upper specification limit."
+    )
+
+elif live_prediction < lower_spec:
+    st.error(
+        "ML Quality Risk: Predicted bore diameter is below the "
+        "24.900 mm lower specification limit."
+    )
+
+elif live_prediction >= 25.080:
+    st.warning(
+        "ML Quality Risk: Bore diameter is within specification "
+        "but approaching the upper specification limit."
+    )
+
+else:
+    st.success(
+        "ML Quality Status: Predicted bore diameter is within specification."
+    )
+
+st.caption(
+    "Educational ML simulation only. Predictions are generated from a "
+    "Random Forest trained on synthetic manufacturing data."
+)
