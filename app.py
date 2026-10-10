@@ -41,7 +41,7 @@ with st.sidebar:
         st.markdown(
             """
             - [Predictive Quality Impact](#predictive-quality-impact)
-            - Tool Wear vs. Bore Diameter
+            - [Tool Wear vs. Bore Diameter](#tool-wear-bore-diameter)
             """
         )
 
@@ -588,6 +588,10 @@ if lower_spec <= predicted_bore <= upper_spec:
 else:
     st.error("Dimensional Status: Out of Specification")
 # Tool Wear vs. Bore Diameter Visualization
+st.markdown(
+    '<div id="tool-wear-bore-diameter"></div>',
+    unsafe_allow_html=True
+)
 st.subheader("Tool Wear vs. Bore Diameter")
 
 st.write(
