@@ -32,7 +32,7 @@ with st.sidebar:
         st.markdown(
             """
            - [Root Cause Analysis](#root-cause-analysis)
-            - Corrective / Preventive Action
+            - [Corrective / Preventive Action](#corrective-preventive-action)
             - Tool-Life Risk Model
             """
         )
@@ -395,6 +395,10 @@ trend_fig.update_layout(
 
 st.plotly_chart(trend_fig, use_container_width=True)
 # CAPA Tracking
+st.markdown(
+    '<div id="corrective-preventive-action"></div>',
+    unsafe_allow_html=True
+)
 st.subheader("Corrective and Preventive Action (CAPA)")
 
 st.write(
