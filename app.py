@@ -50,7 +50,7 @@ with st.sidebar:
             """
             - [Predictive Quality Model](#predictive-quality-model)
             - [Feature Importance](#feature-importance)
-            - Live ML Process Simulator
+            - [Live ML Process Simulator](#live-ml-process-simulator)
             - ML Decision Support
             - ML Model Validation
             """
@@ -811,6 +811,10 @@ st.caption(
     "should not be interpreted as validated real-world causal relationships."
 )
 # Live ML Process Simulator
+st.markdown(
+    '<div id="live-ml-process-simulator"></div>',
+    unsafe_allow_html=True
+)
 st.subheader("Live ML Process Simulator")
 
 st.write(
