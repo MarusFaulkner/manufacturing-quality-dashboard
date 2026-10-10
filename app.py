@@ -48,7 +48,7 @@ with st.sidebar:
     with st.expander("Machine Learning"):
         st.markdown(
             """
-            - Predictive Quality Model
+            - [Predictive Quality Model](#predictive-quality-model)
             - Feature Importance
             - Live ML Process Simulator
             - ML Decision Support
@@ -670,6 +670,10 @@ st.plotly_chart(
     use_container_width=True
 )
 # Machine Learning Predictive Quality Model
+st.markdown(
+    '<div id="predictive-quality-model"></div>',
+    unsafe_allow_html=True
+)
 st.subheader("Machine Learning — Predictive Quality Model")
 
 st.write(
