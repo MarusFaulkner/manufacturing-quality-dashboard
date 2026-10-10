@@ -1,0 +1,6 @@
+# For developing and running the test-suite.
+pytest>=7
+ruff
+
+# The main application dependencies (streamlit, pandas, plotly, numpy,
+# scikit-learn) are declared in pyproject.toml under [project.dependencies].

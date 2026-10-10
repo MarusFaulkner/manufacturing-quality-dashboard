@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "manufacturing-quality-dashboard"
+version = "1.0.1"
+description = "Interactive manufacturing quality analytics dashboard (Streamlit) with a pure, testable quality-engineering core."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["quality", "spc", "process-capability", "pareto", "streamlit", "manufacturing"]
+dependencies = [
+    "streamlit",
+    "pandas",
+    "plotly",
+    "numpy",
+    "scikit-learn",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7",
+    "ruff",
+]
+
+[tool.setuptools]
+# The Streamlit entrypoint (app.py) is a script, not a module; only the extracted
+# pure calculation module is packaged/importable.
+py-modules = ["quality_core"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+# Bug-catching lints only (pyflakes + syntax errors).  The codebase has
+# pre-existing line-length/style noise that is not worth churning.
+select = ["F", "E9"]
