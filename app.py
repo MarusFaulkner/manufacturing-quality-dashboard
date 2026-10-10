@@ -67,38 +67,7 @@ st.info(
     "dashboard are synthetic and intended for educational demonstration."
 )
 
-# Dashboard Navigation
-with st.sidebar:
-    st.header("Dashboard Navigation")
 
-    st.markdown(
-        """
-        **Quality Analytics**
-        - Quality Performance
-        - Defect Pareto Analysis
-        - Process Capability
-
-        **Root Cause & Improvement**
-        - Root Cause Analysis
-        - Corrective / Preventive Action
-        - Tool-Life Risk Model
-
-        **Predictive Quality**
-        - Predictive Quality Impact
-        - Tool Wear vs. Bore Diameter
-
-        **Machine Learning**
-        - Predictive Quality Model
-        - Feature Importance
-        - Live ML Process Simulator
-        - ML Decision Support
-        - ML Model Validation
-        """
-    )
-
-    st.divider()
-
-    st.caption(
         "Portfolio demonstration using synthetic manufacturing data."
     )
 
