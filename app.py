@@ -68,8 +68,8 @@ st.info(
 )
 
 
-        "Portfolio demonstration using synthetic manufacturing data."
-    )
+        
+    
 
 import pandas as pd
 
