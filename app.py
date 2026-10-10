@@ -4,7 +4,23 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import plotly.express as px
 
-import numpy as np
+from quality_core import (
+    DEMO_BORE_MEASUREMENTS,
+    DEMO_DEFECT_COUNTS,
+    DEMO_DEFECT_TYPES,
+    DEMO_TOTAL_INSPECTED,
+    RECOMMENDED_TOOL_LIFE,
+    capability_summary,
+    defect_rate as calc_defect_rate,
+    first_pass_yield as calc_first_pass_yield,
+    generate_synthetic_dataset,
+    ml_decision,
+    ml_quality_assessment,
+    pareto_analysis,
+    simulate_bore_diameter,
+    spc_control_limits,
+    tool_life_status,
+)
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
@@ -74,25 +90,18 @@ st.info(
 
 
 
-# Synthetic manufacturing inspection data
-data = {
-    "Defect Type": [
-        "Bore Diameter",
-        "Surface Finish",
-        "Runout",
-        "Burr",
-        "Scratch"
-    ],
-    "Defect Count": [16, 5, 3, 2, 2]
-}
-
-df = pd.DataFrame(data)
+# Synthetic inspection data lives in quality_core so the demo numbers are
+# unit-tested and shared with the test-suite (see DEMO_* constants).
+df = pd.DataFrame({
+    "Defect Type": DEMO_DEFECT_TYPES,
+    "Defect Count": DEMO_DEFECT_COUNTS,
+})
 
 # Production totals
-total_inspected = 240
+total_inspected = DEMO_TOTAL_INSPECTED
 total_defects = df["Defect Count"].sum()
-defect_rate = (total_defects / total_inspected) * 100
-first_pass_yield = ((total_inspected - total_defects) / total_inspected) * 100
+defect_rate = calc_defect_rate(total_defects, total_inspected)
+first_pass_yield = calc_first_pass_yield(total_defects, total_inspected)
 st.markdown(
     '<div id="quality-performance"></div>',
     unsafe_allow_html=True
@@ -118,18 +127,19 @@ st.markdown(
 st.subheader("Defect Pareto Analysis")
 
 
-# Sort defects from highest to lowest
-pareto_df = df.sort_values(
-    by="Defect Count",
-    ascending=False
-).copy()
-
-# Calculate cumulative percentage
-pareto_df["Cumulative %"] = (
-    pareto_df["Defect Count"].cumsum()
-    / pareto_df["Defect Count"].sum()
-    * 100
+# Sort defects from highest to lowest and add the cumulative percentage.
+# Delegated to quality_core.pareto_analysis (deterministic tie-breaking).
+_pareto = pareto_analysis(
+    df["Defect Type"].tolist(), df["Defect Count"].tolist()
 )
+pareto_df = pd.DataFrame([
+    {
+        "Defect Type": row["label"],
+        "Defect Count": row["count"],
+        "Cumulative %": row["cumulative_pct"],
+    }
+    for row in _pareto["rows"]
+])
 
 
 # Create a true Pareto chart
@@ -210,25 +220,21 @@ st.write(
     "Synthetic bore diameter measurements used to demonstrate process variation and control limits."
 )
 
-# Synthetic dimensional measurements in millimeters
-measurements = [
-    25.01, 24.98, 25.03, 25.00, 24.97,
-    25.02, 25.04, 24.99, 25.01, 24.96,
-    25.00, 25.03, 24.98, 25.02, 25.01,
-    24.99, 25.04, 25.00, 24.97, 25.02
-]
+# Synthetic dimensional measurements in millimeters (shared constant)
+measurements = DEMO_BORE_MEASUREMENTS
 
 spc_df = pd.DataFrame({
     "Sample": range(1, len(measurements) + 1),
     "Measurement": measurements
 })
 
-# Calculate SPC statistics
-process_mean = spc_df["Measurement"].mean()
-process_std = spc_df["Measurement"].std()
-
-ucl = process_mean + (3 * process_std)
-lcl = process_mean - (3 * process_std)
+# Calculate SPC statistics (3-sigma limits) and flag any out-of-control samples
+_spc = spc_control_limits(measurements, sigma_multiplier=3.0)
+process_mean = _spc["mean"]
+process_std = _spc["std"]
+ucl = _spc["ucl"]
+lcl = _spc["lcl"]
+out_of_control = _spc["out_of_control"]
 
 # Interactive engineering specification limits
 st.sidebar.header("What-If Specification Analysis")
@@ -267,6 +273,16 @@ st.dataframe(
     hide_index=True,
     use_container_width=True
 )
+# Out-of-control status (the chart draws limits; now violations are also flagged)
+if out_of_control:
+    st.error(
+        f"Control-chart alert: {len(out_of_control)} measurement(s) sit "
+        "outside the 3-sigma control limits — investigate the process."
+    )
+else:
+    st.success(
+        "Control-chart status: all measurements within the 3-sigma limits."
+    )
 # SPC visualization
 st.subheader("Bore Diameter Control Chart")
 
@@ -314,6 +330,18 @@ spc_fig.add_trace(
     )
 )
 
+# Highlight any out-of-control samples (outside the 3-sigma limits)
+if out_of_control:
+    spc_fig.add_trace(
+        go.Scatter(
+            x=[spc_df["Sample"][i] for i in out_of_control],
+            y=[spc_df["Measurement"][i] for i in out_of_control],
+            mode="markers",
+            name="Out of Control",
+            marker=dict(color="red", size=12, symbol="x"),
+        )
+    )
+
 spc_fig.update_layout(
     title="Synthetic Bore Diameter — 3-Sigma Demonstration",
     xaxis_title="Sample",
@@ -332,13 +360,16 @@ st.markdown(
 st.subheader("Process Capability")
 
 
-# Calculate Cp and Cpk
-cp = (usl - lsl) / (6 * process_std)
-
-cpu = (usl - process_mean) / (3 * process_std)
-cpl = (process_mean - lsl) / (3 * process_std)
-
-cpk = min(cpu, cpl)
+# Calculate capability indices.  capability_summary also derives the long-term
+# performance indices (Pp/Ppk) and the target-aware Taguchi index (Cpm), which
+# makes the "Target Diameter" sidebar input drive a real calculation.
+_cap = capability_summary(measurements, lsl, usl, target=target)
+cp = _cap["cp"]
+cpk = _cap["cpk"]
+pp = _cap["pp"]
+ppk = _cap["ppk"]
+cpm = _cap["cpm"]
+cap_status = _cap["status"]
 
 # Display capability metrics
 cap_col1, cap_col2, cap_col3, cap_col4 = st.columns(4)
@@ -347,12 +378,24 @@ cap_col1.metric("LSL", f"{lsl:.2f} mm")
 cap_col2.metric("USL", f"{usl:.2f} mm")
 cap_col3.metric("Cp", f"{cp:.2f}")
 cap_col4.metric("Cpk", f"{cpk:.2f}")
+
+cap2_col1, cap2_col2, cap2_col3 = st.columns(3)
+cap2_col1.metric("Pp (long-term)", f"{pp:.2f}")
+cap2_col2.metric("Ppk (long-term)", f"{ppk:.2f}")
+cap2_col3.metric("Cpm (target-aware)", f"{cpm:.2f}")
+
+st.caption(
+    "Cp/Cpk use the short-term (sample) sigma; Pp/Ppk use the long-term "
+    "(overall) sigma.  Cpm additionally penalises drift away from the "
+    "Target Diameter."
+)
+
 # Capability status
 st.subheader("Capability Assessment")
 
-if cpk >= 1.33:
+if cap_status == "Capable":
     st.success("Demonstration Status: Capable")
-elif cpk >= 1.00:
+elif cap_status == "Marginal":
     st.warning("Demonstration Status: Marginal")
 else:
     st.error("Demonstration Status: Not Capable")
@@ -537,8 +580,8 @@ tool_cycles = st.slider(
     step=25
 )
 
-# Synthetic recommended tool-life limit
-recommended_tool_life = 800
+# Synthetic recommended tool-life limit (shared with quality_core)
+recommended_tool_life = RECOMMENDED_TOOL_LIFE
 
 tool_life_used = (tool_cycles / recommended_tool_life) * 100
 
@@ -547,13 +590,14 @@ st.metric(
     f"{tool_life_used:.1f}%"
 )
 
-# Tool-life risk classification
-if tool_life_used < 75:
-    st.success("Tool Status: Normal — Continue Monitoring")
-elif tool_life_used < 100:
-    st.warning("Tool Status: Monitor — Approaching Preventive Replacement")
+# Tool-life risk classification (delegated to quality_core.tool_life_status)
+_tl_status = tool_life_status(tool_cycles)
+if _tl_status["level"] == "ok":
+    st.success("Tool Status: " + _tl_status["label"])
+elif _tl_status["level"] == "warn":
+    st.warning("Tool Status: " + _tl_status["label"])
 else:
-    st.error("Tool Status: Replacement Recommended — Tool-Life Limit Reached")
+    st.error("Tool Status: " + _tl_status["label"])
 # Predictive Quality Impact Model
 st.markdown(
     '<div id="predictive-quality-impact"></div>',
@@ -566,18 +610,14 @@ st.write(
     "bore diameter stability and dimensional defect risk."
 )
 
-# Synthetic bore-diameter model
+# Synthetic bore-diameter model.  The piecewise drift function lives in
+# quality_core so the slider below and the chart further down cannot drift apart.
 nominal_bore = 25.00
 upper_spec = 25.10
 lower_spec = 24.90
 
 # Tool wear begins influencing dimensional stability
-if tool_cycles < 600:
-    predicted_bore = nominal_bore
-elif tool_cycles < 800:
-    predicted_bore = nominal_bore + ((tool_cycles - 600) / 200) * 0.08
-else:
-    predicted_bore = 25.08 + ((tool_cycles - 800) / 200) * 0.07
+predicted_bore = simulate_bore_diameter(tool_cycles)
 
 st.metric(
     "Predicted Bore Diameter",
@@ -602,17 +642,9 @@ st.write(
 
 # Generate synthetic tool-life curve
 cycle_range = list(range(0, 1001, 25))
-predicted_bores = []
 
-for cycle in cycle_range:
-    if cycle < 600:
-        bore = nominal_bore
-    elif cycle < 800:
-        bore = nominal_bore + ((cycle - 600) / 200) * 0.08
-    else:
-        bore = 25.08 + ((cycle - 800) / 200) * 0.07
-
-    predicted_bores.append(bore)
+# Same shared model function as the slider (single source of truth for drift).
+predicted_bores = [simulate_bore_diameter(cycle) for cycle in cycle_range]
 
 tool_wear_df = pd.DataFrame({
     "Tool Cycles": cycle_range,
@@ -682,41 +714,9 @@ st.write(
     "bore diameter from operating conditions."
 )
 
-# Reproducible synthetic manufacturing dataset
-np.random.seed(42)
-
-sample_size = 500
-
-ml_tool_cycles = np.random.randint(0, 1001, sample_size)
-ml_spindle_speed = np.random.randint(1800, 3201, sample_size)
-ml_feed_rate = np.random.uniform(80, 180, sample_size)
-ml_vibration = np.random.uniform(0.5, 4.0, sample_size)
-ml_temperature = np.random.uniform(20, 45, sample_size)
-
-# Synthetic dimensional behavior
-tool_wear_effect = np.where(
-    ml_tool_cycles < 600,
-    0,
-    (ml_tool_cycles - 600) * 0.00035
-)
-
-bore_diameter = (
-    25.000
-    + tool_wear_effect
-    + (ml_vibration - 2.0) * 0.008
-    + (ml_temperature - 30.0) * 0.001
-    + (ml_feed_rate - 130.0) * 0.00015
-    + np.random.normal(0, 0.008, sample_size)
-)
-
-ml_data = pd.DataFrame({
-    "Tool Cycles": ml_tool_cycles,
-    "Spindle Speed": ml_spindle_speed,
-    "Feed Rate": ml_feed_rate,
-    "Vibration": ml_vibration,
-    "Temperature": ml_temperature,
-    "Bore Diameter": bore_diameter
-})
+# Reproducible synthetic manufacturing dataset, generated in quality_core.
+# Same numbers every render, and no longer mutates NumPy's global RNG seed.
+ml_data = pd.DataFrame(generate_synthetic_dataset(sample_size=500, seed=42))
 
 # ML features and prediction target
 X = ml_data[
@@ -886,24 +886,22 @@ st.metric(
 )
 
 # Compare ML prediction with engineering specification limits
-if live_prediction > upper_spec:
+_assessment = ml_quality_assessment(live_prediction, lower_spec, upper_spec)
+if _assessment == "out_high":
     st.error(
         "ML Quality Risk: Predicted bore diameter exceeds the "
         "25.100 mm upper specification limit."
     )
-
-elif live_prediction < lower_spec:
+elif _assessment == "out_low":
     st.error(
         "ML Quality Risk: Predicted bore diameter is below the "
         "24.900 mm lower specification limit."
     )
-
-elif live_prediction >= 25.080:
+elif _assessment == "near_upper":
     st.warning(
         "ML Quality Risk: Bore diameter is within specification "
         "but approaching the upper specification limit."
     )
-
 else:
     st.success(
         "ML Quality Status: Predicted bore diameter is within specification."
@@ -942,31 +940,28 @@ decision_col2.metric(
     f"{live_prediction:.3f} mm"
 )
 
-# Decision-support logic
-if live_prediction > upper_spec or live_prediction < lower_spec:
+# Decision-support logic (single source of truth in quality_core.ml_decision)
+_action = ml_decision(sim_tool_cycles, live_prediction, lower_spec, upper_spec)
+if _action == "stop_and_inspect":
     st.error(
         "ACTION: Stop and Inspect — ML predicts a dimensional "
         "condition outside the engineering specification limits."
     )
-
-elif sim_tool_cycles >= recommended_tool_life:
+elif _action == "replace_tool":
     st.error(
         "ACTION: Replace Tool — Preventive tool-life limit has been reached "
         "and continued production increases dimensional risk."
     )
-
-elif live_prediction >= 25.080:
+elif _action == "prepare_tool_change":
     st.warning(
         "ACTION: Prepare Tool Change — Product remains within specification, "
         "but the ML model indicates increasing dimensional risk."
     )
-
-elif sim_tool_life_percent >= 75:
+elif _action == "increase_monitoring":
     st.warning(
         "ACTION: Increase Monitoring — Tool is approaching its preventive "
         "replacement interval."
     )
-
 else:
     st.success(
         "ACTION: Continue Production — Tool life and ML-predicted dimensional "

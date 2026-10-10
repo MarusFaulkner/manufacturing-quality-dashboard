@@ -16,8 +16,9 @@ The dashboard follows a manufacturing quality problem from detection through ana
 
 - Interactive manufacturing quality KPI dashboard
 - Defect Pareto analysis with cumulative percentage
-- Statistical Process Control (SPC)
-- Cp and Cpk process capability analysis
+- Statistical Process Control (SPC) with 3-sigma out-of-control detection
+- Cp / Cpk process capability and Pp / Ppk long-term performance indices
+- Cpm (Taguchi) target-aware capability index driven by the Target Diameter input
 - What-If specification analysis
 - 5 Whys root cause analysis
 - Corrective and Preventive Action (CAPA) tracking
@@ -50,7 +51,7 @@ The dashboard incorporates several commonly used manufacturing quality concepts:
 
 - Pareto Analysis
 - Statistical Process Control
-- Cp / Cpk
+- Cp / Cpk, Pp / Ppk and Cpm (Taguchi) capability & performance indices
 - Root Cause Analysis
 - 5 Whys
 - CAPA
@@ -58,6 +59,34 @@ The dashboard incorporates several commonly used manufacturing quality concepts:
 - Tool-life management
 - Predictive quality
 - Machine-learning model validation
+
+## Project Structure
+
+```
+app.py            Streamlit entrypoint (run: `streamlit run app.py`)
+quality_core.py   Pure, dependency-light quality-engineering calculations
+                  (unit-tested, importable without a Streamlit runtime)
+tests/            pytest suite: quality_core unit tests + an end-to-end
+                  Streamlit AppTest smoke test
+```
+
+The statistics that used to live inline in `app.py` have been extracted into
+`quality_core.py` so they can be unit-tested and reused without launching a
+browser.  Only the one-off synthetic ML dataset factory requires NumPy, and it
+seeds a private random generator instead of mutating NumPy's global state.
+
+## Running the tests
+
+```bash
+pip install -e ".[dev]"   # installs pytest + ruff plus the app dependencies
+python -m pytest tests/   # all tests pass
+ruff check .
+```
+
+The suite covers every metric the dashboard renders (defect rate, Pareto,
+SPC limits, Cp/Cpk, Pp/Ppk, Cpm, tool-life bands, ML decision priority) plus a
+headless `AppTest` run that executes the whole dashboard and asserts the page
+renders without exceptions.
 
 ## Technology Stack
 
