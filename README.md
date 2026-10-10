@@ -3,7 +3,9 @@
 An interactive manufacturing quality engineering dashboard built with Python and Streamlit. This portfolio project demonstrates how inspection data, statistical quality tools, root cause analysis, predictive analytics, and machine learning can be integrated into a manufacturing decision-support workflow.
 
 > **Note:** All manufacturing and machine-learning data used in this project are synthetic and created for educational and portfolio demonstration purposes.
+## Dashboard Preview
 
+![Manufacturing Quality Analytics Dashboard](images/manufacturing-quality-dashboard.png)
 ## Project Overview
 
 The dashboard follows a manufacturing quality problem from detection through analysis, corrective action, prediction, and model validation.
