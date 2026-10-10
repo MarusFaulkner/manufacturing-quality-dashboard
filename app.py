@@ -873,3 +873,59 @@ st.caption(
     "Decision support is an educational demonstration based on synthetic "
     "manufacturing data and predefined engineering thresholds."
 )
+# Actual vs. Predicted Model Validation
+st.subheader("ML Model Validation")
+
+st.write(
+    "Compare actual synthetic test measurements with Random Forest predictions "
+    "to evaluate how closely the model reproduces unseen bore-diameter results."
+)
+
+validation_df = pd.DataFrame({
+    "Actual Bore Diameter": y_test.values,
+    "Predicted Bore Diameter": y_pred
+})
+
+fig_validation = px.scatter(
+    validation_df,
+    x="Actual Bore Diameter",
+    y="Predicted Bore Diameter",
+    title="Actual vs. Predicted Bore Diameter"
+)
+
+# Perfect-prediction reference line
+validation_min = min(
+    validation_df["Actual Bore Diameter"].min(),
+    validation_df["Predicted Bore Diameter"].min()
+)
+
+validation_max = max(
+    validation_df["Actual Bore Diameter"].max(),
+    validation_df["Predicted Bore Diameter"].max()
+)
+
+fig_validation.add_shape(
+    type="line",
+    x0=validation_min,
+    y0=validation_min,
+    x1=validation_max,
+    y1=validation_max,
+    line=dict(
+        dash="dash"
+    )
+)
+
+fig_validation.update_layout(
+    xaxis_title="Actual Bore Diameter (mm)",
+    yaxis_title="Predicted Bore Diameter (mm)"
+)
+
+st.plotly_chart(
+    fig_validation,
+    use_container_width=True
+)
+
+st.caption(
+    "Points closer to the diagonal reference line indicate closer agreement "
+    "between synthetic test measurements and ML predictions."
+)
